@@ -13,6 +13,7 @@ class Server
 {
     int port;
     WSADATA wsaData;
+
 public:
     Server(int port) : port(port)
     {
@@ -27,12 +28,29 @@ public:
     void start()
     {
         SOCKET server_fd = socket(AF_INET, SOCK_STREAM, 0);
+        if (server_fd == -1)
+        {
+            perror("socket failed");
+            exit(EXIT_FAILURE);
+        }
         sockaddr_in address;
         address.sin_family = AF_INET;
         address.sin_addr.s_addr = INADDR_ANY;
         address.sin_port = htons(port);
+        if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) == -1)
+        {
+            perror("bind failed");
+            closesocket(server_fd);
+            exit(EXIT_FAILURE);
+        }
 
-        
+        if (listen(server_fd, 3) == -1)
+        {
+            perror("listen failed");
+            closesocket(server_fd);
+            exit(EXIT_FAILURE);
+        }
+
         std::cout << "Server listening on port " << port << std::endl;
 
         while (true)

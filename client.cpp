@@ -15,6 +15,7 @@ class Client
     int port;
     int period;
     WSADATA wsaData;
+
 public:
     Client(const std::string &name, int port, int period)
         : name(name), port(port), period(period)
@@ -40,10 +41,27 @@ private:
     void sendMessage()
     {
         SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
+        if (sock == -1)
+        {
+            perror("Socket creation error");
+            return;
+        }
         sockaddr_in serv_addr;
         serv_addr.sin_family = AF_INET;
         serv_addr.sin_port = htons(port);
+        if (inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr) <= 0)
+        {
+            perror("Invalid address/ Address not supported");
+            closesocket(sock);
+            return;
+        }
 
+        if (inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr) <= 0)
+        {
+            perror("Invalid address/ Address not supported");
+            closesocket(sock);
+            return;
+        }
         auto now = std::chrono::system_clock::now();
         auto in_time_t = std::chrono::system_clock::to_time_t(now);
         auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
