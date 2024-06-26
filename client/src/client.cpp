@@ -3,12 +3,16 @@
 Client::Client(const std::string &_name, int _port, int _period)
     : name(_name), port(_port), period(_period)
 {
+#ifdef _WIN32
   WSAStartup(MAKEWORD(2, 2), &wsaData);
+#endif
 }
 
 Client::~Client()
 {
+#ifdef _WIN32
   WSACleanup();
+#endif
 }
 
 void Client::start()
@@ -36,14 +40,14 @@ void Client::sendMessage()
   if (inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr) <= 0)
   {
     perror("Invalid address/ Address not supported");
-    closesocket(sock);
+    closeSocket(sock);
     return;
   }
 
   if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == -1)
   {
     perror("Connection Failed");
-    closesocket(sock);
+    closeSocket(sock);
     return;
   }
 
@@ -58,6 +62,14 @@ void Client::sendMessage()
      << ms.count() << "] " << name;
 
   send(sock, ss.str().c_str(), ss.str().length(), 0);
-  closesocket(sock);
+  closeSocket(sock);
 }
 
+void Client::closeSocket(int socket)
+{
+#ifdef _WIN32
+  closesocket(socket);
+#else
+  close(socket);
+#endif
+}

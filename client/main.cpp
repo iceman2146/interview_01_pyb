@@ -1,5 +1,7 @@
 #include "client.h"
-
+#ifdef _WIN32
+  #define _CRT_SECURE_NO_WARNINGS
+#endif
 int main(int argc, char *argv[])
 {
   if (argc != 4)

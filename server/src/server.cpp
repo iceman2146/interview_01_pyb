@@ -4,13 +4,16 @@ std::mutex logMutex;
 
 Server::Server(int _port) : port(_port)
 {
- WSAStartup(MAKEWORD(2, 2), &wsaData);
-
+#ifdef _WIN32
+    WSAStartup(MAKEWORD(2, 2), &wsaData);
+#endif
 }
 
 Server::~Server()
 {
- WSACleanup();
+#ifdef _WIN32
+    WSACleanup();
+#endif
 }
 
 void Server::start()
@@ -30,14 +33,14 @@ void Server::start()
     if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) == -1)
     {
         perror("bind failed");
-        closesocket(server_fd);
+        closeSocket(server_fd);
         exit(EXIT_FAILURE);
     }
 
     if (listen(server_fd, 3) == -1)
     {
         perror("listen failed");
-        closesocket(server_fd);
+        closeSocket(server_fd);
         exit(EXIT_FAILURE);
     }
 
@@ -66,6 +69,14 @@ void Server::handleClient(int client_socket)
         logFile << buffer << std::endl;
         logFile.close();
     }
-    closesocket(client_socket);
+    closeSocket(client_socket);
 }
 
+void Server::closeSocket(int socket)
+{
+#ifdef _WIN32
+    closesocket(socket);
+#else
+    close(socket);
+#endif
+}
