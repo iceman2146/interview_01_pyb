@@ -5,14 +5,14 @@ std::mutex logMutex;
 Server::Server(int _port) : port(_port)
 {
 #ifdef _WIN32
-    WSAStartup(MAKEWORD(2, 2), &wsaData);
+    WSAStartup(MAKEWORD(2, 2), &wsaData);//инициализации библиотеки Winsock
 #endif
 }
 
 Server::~Server()
 {
 #ifdef _WIN32
-    WSACleanup();
+    WSACleanup();//завершения работы с библиотекой Winsock
 #endif
 }
 

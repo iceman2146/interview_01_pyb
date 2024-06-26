@@ -4,14 +4,14 @@ Client::Client(const std::string &_name, int _port, int _period)
     : name(_name), port(_port), period(_period)
 {
 #ifdef _WIN32
-  WSAStartup(MAKEWORD(2, 2), &wsaData);
+  WSAStartup(MAKEWORD(2, 2), &wsaData);//инициализации библиотеки Winsock
 #endif
 }
 
 Client::~Client()
 {
 #ifdef _WIN32
-  WSACleanup();
+  WSACleanup();//завершения работы с библиотекой Winsock
 #endif
 }
 
